@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs").promises;
 const path = require("path");
+const { init } = require("./npminstallcommand");
 
 // process.exit(1);
 
@@ -9,9 +10,12 @@ async function foldercreation(array_files, folder_name) {
   try {
     if (folder_name !== folder) {
       await fs.mkdir(folder_name);
-      array_files.forEach((file) => {
-        filecreaction(file, folder_name);
-      });
+
+      await Promise.all(
+        array_files.map(async (file) => {
+          await filecreaction(file, folder_name);
+        })
+      );
     } else {
       array_files.forEach((file) => {
         filecreaction(file, folder_name);
@@ -20,6 +24,7 @@ async function foldercreation(array_files, folder_name) {
   } catch (err) {
     console.log(err);
   }
+  return init(path.resolve(process.cwd(), folder_name));
 }
 async function filecreaction(f_name, folder_name) {
   try {
@@ -72,3 +77,4 @@ foldercreation(
   ],
   process.argv[2] === "." ? folder : process.argv[2] || "default"
 );
+console.log("This is the last one....");
